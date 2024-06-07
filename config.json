@@ -1,6 +1,0 @@
-{
-  "PORT": 9999,
-  "DB_TYPE": "MYSQL",
-  "DB_NAME": "test",
-  "DB_CONNECTION_STRING": "root:$login$00@tcp/course_registration_system"
-}
