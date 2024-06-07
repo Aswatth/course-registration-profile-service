@@ -32,8 +32,18 @@ func (obj *StudentProfileController) CreateProfile(context *gin.Context) {
 	obj.service.CreateProfile(student_profile)
 }
 
+func (obj *StudentProfileController) FetchStudentProfile(context *gin.Context) {
+	student_email := context.Query("student_email")
+
+	//Fetch from DB
+	fetched_student_profile := obj.service.FetchStudentProfile(student_email)
+
+	context.JSON(http.StatusOK, fetched_student_profile)
+}
+
 func (obj *StudentProfileController) RegisterRoutes(rg *gin.RouterGroup) {
 	student_profile_routes := rg.Group("/student")
 
 	student_profile_routes.POST("/create", obj.CreateProfile)
+	student_profile_routes.GET("/fetch", obj.FetchStudentProfile)
 }

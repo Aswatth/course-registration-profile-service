@@ -26,3 +26,11 @@ func (obj *StudentProfileService) CreateProfile(student_profile models.StudentPr
 		fmt.Println("New profile created successfully")
 	}
 }
+
+func (obj *StudentProfileService) FetchStudentProfile(student_email string) models.StudentProfile {
+	var student_profile models.StudentProfile
+
+	obj.sql_database.db.First(&student_profile, "email_id = ?", student_email)
+
+	return student_profile
+}
