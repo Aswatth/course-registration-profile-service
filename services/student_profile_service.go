@@ -27,14 +27,20 @@ func (obj *StudentProfileService) CreateProfile(student_profile models.StudentPr
 	}
 }
 
-func (obj *StudentProfileService) FetchStudentProfile(student_email string) models.StudentProfile {
+func (obj *StudentProfileService) FetchStudentProfile(email_id string) models.StudentProfile {
 	var student_profile models.StudentProfile
 
-	obj.sql_database.db.First(&student_profile, "email_id = ?", student_email)
+	obj.sql_database.db.First(&student_profile, "email_id = ?", email_id)
 
 	return student_profile
 }
 
 func (obj *StudentProfileService) UpdateStudentProfile(student_profile models.StudentProfile) {
 	obj.sql_database.db.Save(&student_profile)
+}
+
+func (obj *StudentProfileService) DeleteStudentProfile(email_id string) {
+	var student_profile models.StudentProfile
+
+	obj.sql_database.db.Delete(&student_profile, "email_id = ?", email_id)
 }

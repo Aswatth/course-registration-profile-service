@@ -86,6 +86,14 @@ func (obj *StudentProfileController) UpdateStudentPassword(context *gin.Context)
 	context.JSON(http.StatusOK, gin.H{"message": "Successfully updated password!"})
 }
 
+func (obj *StudentProfileController) DeleteStudentProfile(context *gin.Context) {
+	email_id := context.Query("email_id")
+
+	obj.service.DeleteStudentProfile(email_id)
+
+	context.JSON(http.StatusOK, gin.H{"message": "Successfully deleted!"})
+}
+
 func (obj *StudentProfileController) RegisterRoutes(rg *gin.RouterGroup) {
 	student_profile_routes := rg.Group("/student")
 
@@ -93,4 +101,5 @@ func (obj *StudentProfileController) RegisterRoutes(rg *gin.RouterGroup) {
 	student_profile_routes.GET("/fetch", obj.FetchStudentProfile)
 	student_profile_routes.PUT("/update", obj.UpdateStudentProfile)
 	student_profile_routes.PUT("/update_password", obj.UpdateStudentPassword)
+	student_profile_routes.DELETE("/delete", obj.DeleteStudentProfile)
 }
