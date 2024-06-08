@@ -34,3 +34,7 @@ func (obj *StudentProfileService) FetchStudentProfile(student_email string) mode
 
 	return student_profile
 }
+
+func (obj *StudentProfileService) UpdateStudentProfile(student_profile models.StudentProfile) {
+	obj.sql_database.db.Save(&student_profile)
+}
