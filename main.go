@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "course-registration-system/profile-service/models"
 	"course-registration-system/profile-service/controllers"
 	"course-registration-system/profile-service/services"
 	"encoding/json"
@@ -48,10 +47,17 @@ func main() {
 	student_profile_controller := new(controllers.StudentProfileController)
 	student_profile_controller.Init(student_profile_service)
 
+	professor_profile_service := new(services.ProfessorProfileService)
+	professor_profile_service.Init(*sql_database)
+
+	professor_profile_controller := new(controllers.ProfessorProfileController)
+	professor_profile_controller.Init(professor_profile_service)
+
 	server := gin.Default()
 
 	base_path := server.Group("")
 	student_profile_controller.RegisterRoutes(base_path)
+	professor_profile_controller.RegisterRoutes(base_path)
 
 	server.Run(":" + fmt.Sprint(config.PORT))
 }
