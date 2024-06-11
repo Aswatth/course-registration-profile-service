@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AdminProfileController struct {
@@ -50,6 +51,11 @@ func (obj *AdminProfileController) CreateStudentProfile(context *gin.Context) {
 	if err := context.ShouldBindJSON(&student_profile); err != nil {
 		context.AbortWithError(http.StatusBadRequest, err)
 	}
+
+	//hash password
+	hash, _ := bcrypt.GenerateFromPassword([]byte(student_profile.Password), bcrypt.DefaultCost)
+
+	student_profile.Password = string(hash)
 
 	//Store to DB
 	err := obj.service.CreateStudentProfile(student_profile)
@@ -99,6 +105,11 @@ func (obj *AdminProfileController) CreateProfessorProfile(context *gin.Context) 
 	if err := context.ShouldBindJSON(&professor_profile); err != nil {
 		context.AbortWithError(http.StatusBadRequest, err)
 	}
+
+	//hash password
+	hash, _ := bcrypt.GenerateFromPassword([]byte(professor_profile.Password), bcrypt.DefaultCost)
+
+	professor_profile.Password = string(hash)
 
 	//Store to DB
 	err := obj.service.CreateProfessorProfile(professor_profile)
