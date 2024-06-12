@@ -45,20 +45,31 @@ func (obj *AdminProfileController) Login(context *gin.Context) {
 }
 
 func (obj *AdminProfileController) CreateStudentProfile(context *gin.Context) {
-	var student_profile models.StudentProfile
+	type NewStudentData struct {
+		Email_id         string
+		Password         string
+		First_name       string
+		Last_name        string
+		Program_enrolled string
+	}
 
+	var new_student NewStudentData
 	//Check if given JSON is valid
-	if err := context.ShouldBindJSON(&student_profile); err != nil {
+	if err := context.ShouldBindJSON(&new_student); err != nil {
 		context.AbortWithError(http.StatusBadRequest, err)
 	}
 
 	//hash password
-	hash, _ := bcrypt.GenerateFromPassword([]byte(student_profile.Login.Password), bcrypt.DefaultCost)
+	hash, _ := bcrypt.GenerateFromPassword([]byte(new_student.Password), bcrypt.DefaultCost)
 
-	student_profile.Login.Password = string(hash)
+	new_student.Password = string(hash)
+
+	//separate profile and login data
+	login_data := models.Login{Email_id: new_student.Email_id, Password: new_student.Password}
+	student_profile_data := models.StudentProfile{Email_id: new_student.Email_id, First_name: new_student.First_name, Last_name: new_student.Last_name, Program_enrolled: new_student.Program_enrolled}
 
 	//Store to DB
-	err := obj.service.CreateStudentProfile(student_profile)
+	err := obj.service.CreateStudentProfile(login_data, student_profile_data)
 
 	if err != nil {
 		context.AbortWithError(http.StatusInternalServerError, err)
@@ -88,7 +99,7 @@ func (obj *AdminProfileController) UpdateStudentProfile(context *gin.Context) {
 func (obj *AdminProfileController) DeleteStudentProfile(context *gin.Context) {
 	email_id := context.Param("email_id")
 
-	err := obj.service.DeleteStudentProfile(email_id)
+	err := obj.service.DeleteProfile(email_id)
 
 	if err != nil {
 		context.AbortWithError(http.StatusInternalServerError, err)
@@ -99,20 +110,33 @@ func (obj *AdminProfileController) DeleteStudentProfile(context *gin.Context) {
 
 func (obj *AdminProfileController) CreateProfessorProfile(context *gin.Context) {
 
-	var professor_profile models.ProfessorProfile
+	type NewProfessorData struct {
+		Email_id    string
+		Password    string
+		First_name  string
+		Last_name   string
+		Designation string
+		Department  string
+	}
+
+	var new_professor_data NewProfessorData
 
 	//Check if given JSON is valid
-	if err := context.ShouldBindJSON(&professor_profile); err != nil {
+	if err := context.ShouldBindJSON(&new_professor_data); err != nil {
 		context.AbortWithError(http.StatusBadRequest, err)
 	}
 
 	//hash password
-	hash, _ := bcrypt.GenerateFromPassword([]byte(professor_profile.Password), bcrypt.DefaultCost)
+	hash, _ := bcrypt.GenerateFromPassword([]byte(new_professor_data.Password), bcrypt.DefaultCost)
 
-	professor_profile.Password = string(hash)
+	new_professor_data.Password = string(hash)
+
+	//separate profile and login data
+	login_data := models.Login{Email_id: new_professor_data.Email_id, Password: new_professor_data.Password}
+	professor_profile_data := models.ProfessorProfile{Email_id: new_professor_data.Email_id, First_name: new_professor_data.First_name, Last_name: new_professor_data.Last_name, Department: new_professor_data.Department, Designation: new_professor_data.Designation}
 
 	//Store to DB
-	err := obj.service.CreateProfessorProfile(professor_profile)
+	err := obj.service.CreateProfessorProfile(login_data, professor_profile_data)
 
 	if err != nil {
 		context.AbortWithError(http.StatusInternalServerError, err)
@@ -142,7 +166,7 @@ func (obj *AdminProfileController) UpdateProfessorProfile(context *gin.Context) 
 func (obj *AdminProfileController) DeleteProfessorProfile(context *gin.Context) {
 	email_id := context.Param("email_id")
 
-	err := obj.service.DeleteProfessorProfile(email_id)
+	err := obj.service.DeleteProfile(email_id)
 
 	if err != nil {
 		context.AbortWithError(http.StatusInternalServerError, err)

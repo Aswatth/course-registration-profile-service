@@ -23,8 +23,12 @@ func (obj *AdminProfileService) Validate(admin_profile models.AdminProfile) bool
 	return fetched_admin_profile.Password == admin_profile.Password
 }
 
-func (obj *AdminProfileService) CreateStudentProfile(student_profile models.StudentProfile) error {
-	result := obj.sql_database.db.Create(&student_profile)
+func (obj *AdminProfileService) CreateStudentProfile(login_data models.Login, student_profile models.StudentProfile) error {
+	result := obj.sql_database.db.Create(&login_data)
+
+	if result.Error == nil {
+		result = obj.sql_database.db.Create(&student_profile)
+	}
 
 	if result.Error != nil {
 		log.Fatal(result.Error)
@@ -47,15 +51,12 @@ func (obj *AdminProfileService) UpdateStudentProfile(email_id string, student_pr
 	return result.Error
 }
 
-func (obj *AdminProfileService) DeleteStudentProfile(email_id string) error {
-	//Deleting login data before deleting profile
-	result := obj.sql_database.db.Delete(&models.StudentProfile{}, "email_id = ?", email_id)
+func (obj *AdminProfileService) CreateProfessorProfile(login_data models.Login, professor_profile models.ProfessorProfile) error {
+	result := obj.sql_database.db.Create(&login_data)
 
-	return result.Error
-}
-
-func (obj *AdminProfileService) CreateProfessorProfile(professor_profile models.ProfessorProfile) error {
-	result := obj.sql_database.db.Create(&professor_profile)
+	if result.Error == nil {
+		result = obj.sql_database.db.Create(&professor_profile)
+	}
 
 	if result.Error != nil {
 		log.Fatal(result.Error)
@@ -79,10 +80,8 @@ func (obj *AdminProfileService) UpdateProfessorProfile(email_id string, professo
 	return result.Error
 }
 
-func (obj *AdminProfileService) DeleteProfessorProfile(email_id string) error {
-	var professor_profile models.ProfessorProfile
-
-	result := obj.sql_database.db.Delete(&professor_profile, "email_id = ?", email_id)
+func (obj *AdminProfileService) DeleteProfile(email_id string) error {
+	result := obj.sql_database.db.Delete(models.Login{}, "email_id = ?", email_id)
 
 	return result.Error
 }

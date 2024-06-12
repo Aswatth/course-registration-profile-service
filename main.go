@@ -20,11 +20,12 @@ func main() {
 	sql_database := new(services.MySqlDatabase)
 	sql_database.Connect(os.Getenv("MYSQL_CONNECTION_STRING"))
 
-	student_profile_service := new(services.StudentProfileService)
-	student_profile_service.Init(*sql_database)
-
+	//To be initialized before student and professor profile tables
 	login_service := new(services.LoginService)
 	login_service.Init(*sql_database)
+
+	student_profile_service := new(services.StudentProfileService)
+	student_profile_service.Init(*sql_database)
 
 	student_profile_controller := new(controllers.StudentProfileController)
 	student_profile_controller.Init(student_profile_service)
