@@ -48,9 +48,8 @@ func (obj *AdminProfileService) UpdateStudentProfile(email_id string, student_pr
 }
 
 func (obj *AdminProfileService) DeleteStudentProfile(email_id string) error {
-	var student_profile models.StudentProfile
-
-	result := obj.sql_database.db.Delete(&student_profile, "email_id = ?", email_id)
+	//Deleting login data before deleting profile
+	result := obj.sql_database.db.Delete(&models.StudentProfile{}, "email_id = ?", email_id)
 
 	return result.Error
 }

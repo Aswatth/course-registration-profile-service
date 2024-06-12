@@ -23,6 +23,9 @@ func main() {
 	student_profile_service := new(services.StudentProfileService)
 	student_profile_service.Init(*sql_database)
 
+	login_service := new(services.LoginService)
+	login_service.Init(*sql_database)
+
 	student_profile_controller := new(controllers.StudentProfileController)
 	student_profile_controller.Init(student_profile_service)
 

@@ -53,9 +53,9 @@ func (obj *AdminProfileController) CreateStudentProfile(context *gin.Context) {
 	}
 
 	//hash password
-	hash, _ := bcrypt.GenerateFromPassword([]byte(student_profile.Password), bcrypt.DefaultCost)
+	hash, _ := bcrypt.GenerateFromPassword([]byte(student_profile.Login.Password), bcrypt.DefaultCost)
 
-	student_profile.Password = string(hash)
+	student_profile.Login.Password = string(hash)
 
 	//Store to DB
 	err := obj.service.CreateStudentProfile(student_profile)
