@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -13,13 +14,13 @@ import (
 
 func ValidateAuthorization(context *gin.Context) {
 	//Get authorization token from cookies
-	token_string, err := context.Cookie("Authorization")
+	token_string := strings.Split(context.Request.Header.Get("Authorization"), " ")[1]
 
-	current_user := strings.Split(context.Request.URL.Path, "/")[1]
+	current_user := strings.ToUpper(strings.Split(context.Request.URL.Path, "/")[1])
 
-	if err != nil {
-		context.AbortWithStatus(http.StatusUnauthorized)
-	}
+	// if err != nil {
+	// 	context.AbortWithError(http.StatusUnauthorized, errors.New("token not found"))
+	// }
 
 	// Parse the token
 	token, err := jwt.Parse(token_string, func(token *jwt.Token) (interface{}, error) {
@@ -33,24 +34,24 @@ func ValidateAuthorization(context *gin.Context) {
 	})
 
 	if err != nil {
-		context.AbortWithStatus(http.StatusUnauthorized)
+		context.AbortWithError(http.StatusUnauthorized, errors.New("error parsing token"))
 	}
 
 	// Read parsed token
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		//Check for expired token
 		if float64(time.Now().Unix()) > claims["expiry"].(float64) {
-			context.AbortWithStatus(http.StatusUnauthorized)
+			context.AbortWithError(http.StatusUnauthorized, errors.New("token expired"))
 		} else {
-			//Check if user type is admin
+			//Check for expected user type
 			if claims["user_type"] == current_user {
 				context.Next()
 			} else {
-				context.AbortWithStatus(http.StatusUnauthorized)
+				context.AbortWithError(http.StatusUnauthorized, errors.New("un-authorized user"))
 			}
 		}
 	} else {
-		context.AbortWithStatus(http.StatusUnauthorized)
+		context.AbortWithError(http.StatusUnauthorized, errors.New("error parsing token"))
 	}
 
 }
