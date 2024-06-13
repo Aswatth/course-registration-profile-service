@@ -24,6 +24,9 @@ func main() {
 	login_service := new(services.LoginService)
 	login_service.Init(*sql_database)
 
+	login_controller := new(controllers.LoginController)
+	login_controller.Init(login_service)
+
 	student_profile_service := new(services.StudentProfileService)
 	student_profile_service.Init(*sql_database)
 
@@ -45,6 +48,7 @@ func main() {
 	server := gin.Default()
 
 	base_path := server.Group("")
+	login_controller.RegisterRoutes(base_path)
 	student_profile_controller.RegisterRoutes(base_path)
 	professor_profile_controller.RegisterRoutes(base_path)
 	admin_profile_controller.RegisterRoutes(base_path)

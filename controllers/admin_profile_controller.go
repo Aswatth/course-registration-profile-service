@@ -4,8 +4,6 @@ import (
 	"course-registration-system/profile-service/middlewares"
 	"course-registration-system/profile-service/models"
 	"course-registration-system/profile-service/services"
-	"course-registration-system/profile-service/utils"
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -18,30 +16,6 @@ type AdminProfileController struct {
 
 func (obj *AdminProfileController) Init(service *services.AdminProfileService) {
 	obj.service = *service
-}
-
-func (obj *AdminProfileController) Login(context *gin.Context) {
-	var admin_profile models.AdminProfile
-
-	//Check if given JSON is valid
-	if err := context.ShouldBindJSON(&admin_profile); err != nil {
-		context.AbortWithError(http.StatusBadRequest, err)
-	}
-
-	result := obj.service.Validate(admin_profile)
-
-	if result {
-		token, err := utils.GenerateToken("admin")
-
-		if err != nil {
-			context.AbortWithError(http.StatusInternalServerError, err)
-		}
-
-		context.SetCookie("Authorization", token, 3600*24, "", "", true, true)
-		context.AbortWithStatus(http.StatusOK)
-	} else {
-		context.AbortWithError(http.StatusBadRequest, errors.New("invalid credentials"))
-	}
 }
 
 func (obj *AdminProfileController) CreateStudentProfile(context *gin.Context) {
@@ -177,8 +151,6 @@ func (obj *AdminProfileController) DeleteProfessorProfile(context *gin.Context) 
 
 func (obj *AdminProfileController) RegisterRoutes(rg *gin.RouterGroup) {
 	admin_profile_routes := rg.Group("/admin")
-
-	admin_profile_routes.GET("/login", obj.Login)
 
 	//Student routes
 	admin_profile_routes.Use(middlewares.ValidateAuthorization).POST("/students", obj.CreateStudentProfile)
