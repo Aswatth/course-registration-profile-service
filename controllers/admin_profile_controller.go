@@ -39,7 +39,7 @@ func (obj *AdminProfileController) CreateStudentProfile(context *gin.Context) {
 	new_student.Password = string(hash)
 
 	//separate profile and login data
-	login_data := models.Login{Email_id: new_student.Email_id, Password: new_student.Password}
+	login_data := models.Login{Email_id: new_student.Email_id, Password: new_student.Password, User_type: "STUDENT"}
 	student_profile_data := models.StudentProfile{Email_id: new_student.Email_id, First_name: new_student.First_name, Last_name: new_student.Last_name, Program_enrolled: new_student.Program_enrolled}
 
 	//Store to DB
@@ -106,7 +106,7 @@ func (obj *AdminProfileController) CreateProfessorProfile(context *gin.Context) 
 	new_professor_data.Password = string(hash)
 
 	//separate profile and login data
-	login_data := models.Login{Email_id: new_professor_data.Email_id, Password: new_professor_data.Password}
+	login_data := models.Login{Email_id: new_professor_data.Email_id, Password: new_professor_data.Password, User_type: "PROFESSOR"}
 	professor_profile_data := models.ProfessorProfile{Email_id: new_professor_data.Email_id, First_name: new_professor_data.First_name, Last_name: new_professor_data.Last_name, Department: new_professor_data.Department, Designation: new_professor_data.Designation}
 
 	//Store to DB

@@ -28,12 +28,12 @@ func (obj *LoginService) Init(db MySqlDatabase) {
 			log.Fatal("Unable to create adming credentials")
 		}
 
-		obj.sql_database.db.Create(&models.Login{Email_id: "admin@univ.edu", Password: string(hashed_password)})
+		obj.sql_database.db.Create(&models.Login{Email_id: "admin@univ.edu", Password: string(hashed_password), User_type: "ADMIN"})
 	}
 
 }
 
-func (obj *LoginService) Validate(login_details models.Login) bool {
+func (obj *LoginService) Validate(login_details models.Login) string {
 
 	var fetched_login models.Login
 
@@ -42,8 +42,8 @@ func (obj *LoginService) Validate(login_details models.Login) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(fetched_login.Password), []byte(login_details.Password))
 
 	if err != nil {
-		return false
+		return "INVALID_CREDENTIALS"
 	} else {
-		return true
+		return fetched_login.User_type
 	}
 }
