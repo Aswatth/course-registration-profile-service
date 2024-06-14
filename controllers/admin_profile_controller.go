@@ -148,9 +148,33 @@ func (obj *AdminProfileController) DeleteProfessorProfile(context *gin.Context) 
 	}
 }
 
+func (obj *AdminProfileController) UpdatePassword(context *gin.Context) {
+
+	email_id := context.Param("email_id")
+
+	type new_password struct {
+		New_password string
+	}
+
+	var new_password_data new_password
+
+	if err := context.ShouldBindJSON(&new_password_data); err != nil {
+		context.AbortWithError(http.StatusBadRequest, err)
+	}
+
+	err := obj.service.UpdatePassword(email_id, new_password_data.New_password)
+
+	if err != nil {
+		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+	}
+
+	context.Status(http.StatusOK)
+}
+
 func (obj *AdminProfileController) RegisterRoutes(rg *gin.RouterGroup) {
 	admin_profile_routes := rg.Group("/admin")
 
+	admin_profile_routes.PUT("/password/:email_id", obj.UpdatePassword)
 	//Student routes
 	admin_profile_routes.POST("/students", obj.CreateStudentProfile)
 	admin_profile_routes.PUT("/students/:email_id", obj.UpdateStudentProfile)
