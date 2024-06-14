@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"course-registration-system/profile-service/middlewares"
 	"course-registration-system/profile-service/models"
 	"course-registration-system/profile-service/services"
 	"net/http"
@@ -153,12 +152,12 @@ func (obj *AdminProfileController) RegisterRoutes(rg *gin.RouterGroup) {
 	admin_profile_routes := rg.Group("/admin")
 
 	//Student routes
-	admin_profile_routes.Use(middlewares.ValidateAuthorization).POST("/students", obj.CreateStudentProfile)
-	admin_profile_routes.Use(middlewares.ValidateAuthorization).PUT("/students/:email_id", obj.UpdateStudentProfile)
-	admin_profile_routes.Use(middlewares.ValidateAuthorization).DELETE("/students/:email_id", obj.DeleteStudentProfile)
+	admin_profile_routes.POST("/students", obj.CreateStudentProfile)
+	admin_profile_routes.PUT("/students/:email_id", obj.UpdateStudentProfile)
+	admin_profile_routes.DELETE("/students/:email_id", obj.DeleteStudentProfile)
 
 	//Professor routes
-	admin_profile_routes.Use(middlewares.ValidateAuthorization).POST("/professors", obj.CreateProfessorProfile)
-	admin_profile_routes.Use(middlewares.ValidateAuthorization).PUT("/professors/:email_id", obj.UpdateProfessorProfile)
-	admin_profile_routes.Use(middlewares.ValidateAuthorization).DELETE("/professors/:email_id", obj.DeleteProfessorProfile)
+	admin_profile_routes.POST("/professors", obj.CreateProfessorProfile)
+	admin_profile_routes.PUT("/professors/:email_id", obj.UpdateProfessorProfile)
+	admin_profile_routes.DELETE("/professors/:email_id", obj.DeleteProfessorProfile)
 }

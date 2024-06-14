@@ -3,7 +3,6 @@ package controllers
 import (
 	"course-registration-system/profile-service/models"
 	"course-registration-system/profile-service/services"
-	"course-registration-system/profile-service/utils"
 	"errors"
 	"net/http"
 
@@ -28,18 +27,12 @@ func (obj *LoginController) Login(context *gin.Context) {
 	}
 
 	//Check if given credentials are correct. If yes, then corresponding user_type is returned else INVALID_CREDENTIALS is returned
-	result := obj.service.Validate(login)
+	user_type := obj.service.Validate(login)
 
-	if result == "INVALID_CREDENTIALS" {
-		context.AbortWithError(http.StatusBadRequest, errors.New(result))
+	if user_type == "INVALID_CREDENTIALS" {
+		context.AbortWithError(http.StatusBadRequest, errors.New(user_type))
 	} else {
-		token, err := utils.GenerateToken(result)
-
-		if err != nil {
-			context.AbortWithError(http.StatusInternalServerError, errors.New("unable to generate jwt token"))
-		}
-
-		context.JSON(http.StatusOK, gin.H{"token": token})
+		context.JSON(http.StatusOK, gin.H{"user_type": user_type})
 	}
 }
 
