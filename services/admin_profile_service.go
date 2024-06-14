@@ -3,6 +3,8 @@ package services
 import (
 	"course-registration-system/profile-service/models"
 	"log"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AdminProfileService struct {
@@ -15,6 +17,11 @@ func (obj *AdminProfileService) Init(db MySqlDatabase) {
 }
 
 func (obj *AdminProfileService) CreateStudentProfile(login_data models.Login, student_profile models.StudentProfile) error {
+	//hash password
+	hash, _ := bcrypt.GenerateFromPassword([]byte(login_data.Password), bcrypt.DefaultCost)
+
+	login_data.Password = string(hash)
+
 	result := obj.sql_database.db.Create(&login_data)
 
 	if result.Error == nil {
@@ -43,6 +50,12 @@ func (obj *AdminProfileService) UpdateStudentProfile(email_id string, student_pr
 }
 
 func (obj *AdminProfileService) CreateProfessorProfile(login_data models.Login, professor_profile models.ProfessorProfile) error {
+
+	//hash password
+	hash, _ := bcrypt.GenerateFromPassword([]byte(login_data.Password), bcrypt.DefaultCost)
+
+	login_data.Password = string(hash)
+
 	result := obj.sql_database.db.Create(&login_data)
 
 	if result.Error == nil {
