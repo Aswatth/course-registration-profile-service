@@ -2,6 +2,7 @@ package services
 
 import (
 	"course-registration-system/profile-service/models"
+	"errors"
 	"log"
 
 	"golang.org/x/crypto/bcrypt"
@@ -25,7 +26,7 @@ func (obj *LoginService) Init(db MySqlDatabase) {
 		hashed_password, err := bcrypt.GenerateFromPassword([]byte("admin"), bcrypt.DefaultCost)
 
 		if err != nil {
-			log.Fatal("Unable to create adming credentials")
+			log.Fatal("Unable to create admin credentials")
 		}
 
 		obj.sql_database.db.Create(&models.Login{Email_id: "admin@univ.edu", Password: string(hashed_password), User_type: "ADMIN"})
@@ -46,4 +47,28 @@ func (obj *LoginService) Validate(login_details models.Login) string {
 	} else {
 		return fetched_login.User_type
 	}
+}
+
+func (obj *LoginService) UpdatePassword(email_id string, new_password string) error {
+
+	var existing_login models.Login
+
+	obj.sql_database.db.First(&existing_login, "email_id = ?", email_id)
+
+	//Check if new password is same as old password
+	err := bcrypt.CompareHashAndPassword([]byte(existing_login.Password), []byte(new_password))
+
+	if err == nil {
+		return errors.New("new password cannot be same as old password")
+	}
+
+	hashed_password, err := bcrypt.GenerateFromPassword([]byte(new_password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return errors.New("unable to hash new password")
+	}
+
+	result := obj.sql_database.db.Exec(`UPDATE logins SET password = ? WHERE email_id = ?`, hashed_password, email_id)
+
+	return result.Error
 }

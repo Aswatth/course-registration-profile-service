@@ -21,3 +21,13 @@ func (obj *ProfessorProfileService) FetchProfessorProfile(email_id string) model
 
 	return professor_profile
 }
+
+func (obj *ProfessorProfileService) UpdatePassword(email_id string, new_password string) error {
+
+	login_service := new(LoginService)
+	login_service.Init(obj.sql_database)
+
+	err := login_service.UpdatePassword(email_id, new_password)
+
+	return err
+}
