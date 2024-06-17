@@ -4,55 +4,15 @@ import (
 	"course-registration-system/profile-service/models"
 	"course-registration-system/profile-service/services"
 	"encoding/json"
-	"log"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
-func init_login() *gin.Engine {
-	r := setup_test_router()
-
-	err := godotenv.Load("../.env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	sql_database := new(services.MySqlDatabase)
-	sql_database.Connect(os.Getenv("MYSQL_CONNECTION_STRING"))
-
-	login_service := new(services.LoginService)
-	login_service.Init(*sql_database)
-
-	login_controller := new(LoginController)
-	login_controller.Init(login_service)
-
-	r.POST("/login", login_controller.Login)
-
-	return r
-}
-
-func init_admin_profile_service() services.AdminProfileService {
-	err := godotenv.Load("../.env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	sql_database := new(services.MySqlDatabase)
-	sql_database.Connect(os.Getenv("MYSQL_CONNECTION_STRING"))
-
-	admin_profile_service := new(services.AdminProfileService)
-	admin_profile_service.Init(*sql_database)
-
-	return *admin_profile_service
-}
-
-func create_professor_profile(admin_profile_service services.AdminProfileService) models.Login {
+func create_mock_professor_profile(admin_profile_service services.AdminProfileService) models.Login {
 	email_id := "professor@univ.edu"
 	mock_login := &models.Login{Email_id: email_id, Password: "12345", User_type: "PROFESSOR"}
 	mock_professor_profile := &models.ProfessorProfile{Email_id: email_id, First_name: "TEST", Last_name: "test", Designation: "Professor", Department: "TEST"}
@@ -62,7 +22,7 @@ func create_professor_profile(admin_profile_service services.AdminProfileService
 	return *mock_login
 }
 
-func create_student_profile(admin_profile_service services.AdminProfileService) models.Login {
+func create_mock_student_profile(admin_profile_service services.AdminProfileService) models.Login {
 	email_id := "student@univ.edu"
 	mock_login := &models.Login{Email_id: email_id, Password: "12345", User_type: "STUDENT"}
 	mock_student_profile := &models.StudentProfile{Email_id: email_id, First_name: "TEST", Last_name: "test", Program_enrolled: "TEST"}
@@ -72,15 +32,12 @@ func create_student_profile(admin_profile_service services.AdminProfileService) 
 	return *mock_login
 }
 
-func run_and_get_user_type(login_data []byte) string {
-
-	router := init_login()
-
+func login_and_get_user_type(server *gin.Engine, login_data []byte) string {
 	w := httptest.NewRecorder()
 
 	req, _ := http.NewRequest("POST", "/login", strings.NewReader(string(login_data)))
 
-	router.ServeHTTP(w, req)
+	server.ServeHTTP(w, req)
 
 	type user_type struct {
 		User_type string
@@ -95,14 +52,28 @@ func run_and_get_user_type(login_data []byte) string {
 
 func TestLogin(t *testing.T) {
 
-	admin_profile_service := init_admin_profile_service()
+	//Setup
+	server := setup_test_router()
+	load_env()
 
+	login_service := new(services.LoginService)
+	login_service.Init(sql_database)
+
+	login_controller := new(LoginController)
+	login_controller.Init(login_service)
+
+	admin_profile_service := *new(services.AdminProfileService)
+	admin_profile_service.Init(sql_database)
+
+	server.POST("/login", login_controller.Login)
+
+	//Test
 	t.Run("Admin login", func(t *testing.T) {
 		login := map[string]string{"email_id": "admin@univ.edu", "password": "admin"}
 
 		login_data, _ := json.Marshal(login)
 
-		actual_result := run_and_get_user_type(login_data)
+		actual_result := login_and_get_user_type(server, login_data)
 
 		if actual_result != "ADMIN" {
 			t.Errorf("\nExpected:\t%s \nActual:\t%s", "ADMIN", actual_result)
@@ -110,11 +81,11 @@ func TestLogin(t *testing.T) {
 	})
 
 	t.Run("Professor login", func(t *testing.T) {
-		mock_login := create_professor_profile(admin_profile_service)
+		mock_login := create_mock_professor_profile(admin_profile_service)
 
 		login_data, _ := json.Marshal(mock_login)
 
-		actual_result := run_and_get_user_type(login_data)
+		actual_result := login_and_get_user_type(server, login_data)
 
 		if actual_result != "PROFESSOR" {
 			t.Errorf("\nExpected:\t%s \nActual:\t%s", "PROFESSOR", actual_result)
@@ -124,11 +95,11 @@ func TestLogin(t *testing.T) {
 	})
 
 	t.Run("Student login", func(t *testing.T) {
-		mock_login := create_student_profile(admin_profile_service)
+		mock_login := create_mock_student_profile(admin_profile_service)
 
 		login_data, _ := json.Marshal(mock_login)
 
-		actual_result := run_and_get_user_type(login_data)
+		actual_result := login_and_get_user_type(server, login_data)
 
 		if actual_result != "STUDENT" {
 			t.Errorf("\nExpected:\t%s \nActual:\t%s", "STUDENT", actual_result)
