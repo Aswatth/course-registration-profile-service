@@ -11,14 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
-
-func setup_router_test() *gin.Engine {
-	r := gin.Default()
-	return r
-}
 
 func init_student_profile() (models.Login, models.StudentProfile, services.AdminProfileService, StudentProfileController) {
 	err := godotenv.Load("../.env")
@@ -47,8 +41,8 @@ func init_student_profile() (models.Login, models.StudentProfile, services.Admin
 	return mock_student_login, mock_student_profile, *admin_profile_service, *student_profile_controller
 }
 
-func TestUpdatePassword(t *testing.T) {
-	server := setup_router_test()
+func TestStudentUpdatePassword(t *testing.T) {
+	server := setup_test_router()
 
 	mock_student_login, mock_student_profile, admin_profile_service, student_profile_controller := init_student_profile()
 
@@ -74,8 +68,8 @@ func TestUpdatePassword(t *testing.T) {
 	admin_profile_service.DeleteProfile(mock_student_login.Email_id)
 }
 
-func TestUpdatePasswordFail(t *testing.T) {
-	server := setup_router_test()
+func TestStudentUpdatePasswordFail(t *testing.T) {
+	server := setup_test_router()
 
 	mock_student_login, mock_student_profile, admin_profile_service, student_profile_controller := init_student_profile()
 
