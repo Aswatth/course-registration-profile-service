@@ -2,7 +2,9 @@ package services
 
 import (
 	"course-registration-system/profile-service/models"
+	"errors"
 	"log"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -21,6 +23,11 @@ func (obj *AdminProfileService) CreateStudentProfile(login_data models.Login, st
 	hash, _ := bcrypt.GenerateFromPassword([]byte(login_data.Password), bcrypt.DefaultCost)
 
 	login_data.Password = string(hash)
+	login_data.User_type = strings.ToUpper(login_data.User_type)
+
+	if login_data.User_type != "PROFESSOR" || login_data.User_type != "STUDENT" {
+		return errors.New("invalid user type")
+	}
 
 	result := obj.sql_database.db.Create(&login_data)
 
@@ -55,6 +62,11 @@ func (obj *AdminProfileService) CreateProfessorProfile(login_data models.Login, 
 	hash, _ := bcrypt.GenerateFromPassword([]byte(login_data.Password), bcrypt.DefaultCost)
 
 	login_data.Password = string(hash)
+	login_data.User_type = strings.ToUpper(login_data.User_type)
+
+	if login_data.User_type != "PROFESSOR" || login_data.User_type != "STUDENT" {
+		return errors.New("invalid user type")
+	}
 
 	result := obj.sql_database.db.Create(&login_data)
 
