@@ -83,3 +83,77 @@ func TestCreateProfessorProfile(t *testing.T) {
 
 	admin_profile_service.DeleteProfile("professor@univ.edu")
 }
+
+func TestDeleteStudentProfile(t *testing.T) {
+	load_env()
+
+	server := setup_test_router()
+
+	admin_profile_service := new(services.AdminProfileService)
+	admin_profile_service.Init(sql_database)
+
+	admin_profile_controller := new(AdminProfileController)
+	admin_profile_controller.Init(admin_profile_service)
+
+	mock_login := models.Login{Email_id: "student@univ.edu", Password: "12345", User_type: "STUDENT"}
+	mock_profile := models.StudentProfile{Email_id: "student@univ.edu", First_name: "test", Last_name: "student", Program_enrolled: "test"}
+
+	admin_profile_service.CreateStudentProfile(mock_login, mock_profile)
+
+	server.DELETE("/admin/students/:email_id", admin_profile_controller.DeleteStudentProfile)
+
+	w := httptest.NewRecorder()
+
+	req, _ := http.NewRequest("DELETE", "/admin/students/student@univ.edu", nil)
+
+	server.ServeHTTP(w, req)
+
+	if w.Code == 200 {
+		login_service := new(services.LoginService)
+		login_service.Init(sql_database)
+
+		result := login_service.Validate(models.Login{Email_id: "student@univ.edu", Password: "12345"})
+
+		if result == "STUDENT" {
+			t.Errorf("able to login after successful deletion")
+		}
+
+	}
+}
+
+func TestDeleteProfessorProfile(t *testing.T) {
+	load_env()
+
+	server := setup_test_router()
+
+	admin_profile_service := new(services.AdminProfileService)
+	admin_profile_service.Init(sql_database)
+
+	admin_profile_controller := new(AdminProfileController)
+	admin_profile_controller.Init(admin_profile_service)
+
+	mock_login := models.Login{Email_id: "professor@univ.edu", Password: "12345", User_type: "PROFESSOR"}
+	mock_profile := models.StudentProfile{Email_id: "professor@univ.edu", First_name: "test", Last_name: "professor", Program_enrolled: "test"}
+
+	admin_profile_service.CreateStudentProfile(mock_login, mock_profile)
+
+	server.DELETE("/admin/professors/:email_id", admin_profile_controller.DeleteProfessorProfile)
+
+	w := httptest.NewRecorder()
+
+	req, _ := http.NewRequest("DELETE", "/admin/professors/professor@univ.edu", nil)
+
+	server.ServeHTTP(w, req)
+
+	if w.Code == 200 {
+		login_service := new(services.LoginService)
+		login_service.Init(sql_database)
+
+		result := login_service.Validate(models.Login{Email_id: "professor@univ.edu", Password: "12345"})
+
+		if result == "PROFESSOR" {
+			t.Errorf("able to login after successful deletion")
+		}
+
+	}
+}
