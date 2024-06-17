@@ -25,7 +25,7 @@ func (obj *AdminProfileService) CreateStudentProfile(login_data models.Login, st
 	login_data.Password = string(hash)
 	login_data.User_type = strings.ToUpper(login_data.User_type)
 
-	if login_data.User_type != "PROFESSOR" || login_data.User_type != "STUDENT" {
+	if login_data.User_type != "PROFESSOR" && login_data.User_type != "STUDENT" {
 		return errors.New("invalid user type")
 	}
 
@@ -64,7 +64,7 @@ func (obj *AdminProfileService) CreateProfessorProfile(login_data models.Login, 
 	login_data.Password = string(hash)
 	login_data.User_type = strings.ToUpper(login_data.User_type)
 
-	if login_data.User_type != "PROFESSOR" || login_data.User_type != "STUDENT" {
+	if login_data.User_type != "PROFESSOR" && login_data.User_type != "STUDENT" {
 		return errors.New("invalid user type")
 	}
 
