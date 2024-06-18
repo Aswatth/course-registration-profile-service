@@ -49,6 +49,14 @@ func (obj *AdminProfileService) GetStudentProfile(email_id string) (models.Stude
 	return student_profile, result.Error
 }
 
+func (obj *AdminProfileService) GetAllStudentProfiles() ([]models.StudentProfile, error) {
+	var student_profile_list []models.StudentProfile
+
+	result := obj.sql_database.db.Find(&student_profile_list)
+
+	return student_profile_list, result.Error
+}
+
 func (obj *AdminProfileService) UpdateStudentProfile(email_id string, student_profile models.StudentProfile) error {
 	result := obj.sql_database.db.Model(&models.StudentProfile{}).Where("email_id = ?", email_id).Updates(student_profile)
 
@@ -86,6 +94,14 @@ func (obj *AdminProfileService) GetProfessorProfile(email_id string) (models.Pro
 	result := obj.sql_database.db.First(&professor_profile, "email_id = ?", email_id)
 
 	return professor_profile, result.Error
+}
+
+func (obj *AdminProfileService) GetAllProfessorProfiles() ([]models.ProfessorProfile, error) {
+	var professor_profile_list []models.ProfessorProfile
+
+	result := obj.sql_database.db.Find(&professor_profile_list)
+
+	return professor_profile_list, result.Error
 }
 
 func (obj *AdminProfileService) UpdateProfessorProfile(email_id string, professor_profile models.ProfessorProfile) error {
