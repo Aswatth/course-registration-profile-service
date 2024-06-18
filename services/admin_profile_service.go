@@ -15,7 +15,6 @@ type AdminProfileService struct {
 
 func (obj *AdminProfileService) Init(db MySqlDatabase) {
 	obj.sql_database = db
-	// obj.sql_database.db.AutoMigrate(&models.AdminProfile{})
 }
 
 func (obj *AdminProfileService) CreateStudentProfile(login_data models.Login, student_profile models.StudentProfile) error {
@@ -42,7 +41,7 @@ func (obj *AdminProfileService) CreateStudentProfile(login_data models.Login, st
 	return result.Error
 }
 
-func (obj *AdminProfileService) FetchStudentProfile(email_id string) (models.StudentProfile, error) {
+func (obj *AdminProfileService) GetStudentProfile(email_id string) (models.StudentProfile, error) {
 	var student_profile models.StudentProfile
 
 	result := obj.sql_database.db.First(&student_profile, "email_id = ?", email_id)
@@ -81,7 +80,7 @@ func (obj *AdminProfileService) CreateProfessorProfile(login_data models.Login, 
 	return result.Error
 }
 
-func (obj *AdminProfileService) FetchProfessorProfile(email_id string) (models.ProfessorProfile, error) {
+func (obj *AdminProfileService) GetProfessorProfile(email_id string) (models.ProfessorProfile, error) {
 	var professor_profile models.ProfessorProfile
 
 	result := obj.sql_database.db.First(&professor_profile, "email_id = ?", email_id)
