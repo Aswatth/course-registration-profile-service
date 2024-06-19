@@ -3,7 +3,6 @@ package controllers
 import (
 	"course-registration-system/profile-service/models"
 	"course-registration-system/profile-service/services"
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,17 +22,17 @@ func (obj *LoginController) Login(context *gin.Context) {
 
 	//Check if given JSON is valid
 	if err := context.ShouldBindJSON(&login); err != nil {
-		context.AbortWithError(http.StatusBadRequest, err)
+		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err})
 	}
 
 	//Check if given credentials are correct. If yes, then corresponding user_type is returned else INVALID_CREDENTIALS is returned
 	user_type := obj.service.Validate(login)
 
 	if user_type == "INVALID_CREDENTIALS" {
-		context.AbortWithError(http.StatusBadRequest, errors.New(user_type))
-	} else {
-		context.JSON(http.StatusOK, gin.H{"user_type": user_type})
+		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": user_type})
 	}
+
+	context.JSON(http.StatusOK, gin.H{"user_type": user_type, "email_id": login.Email_id})
 }
 
 func (obj *LoginController) RegisterRoutes(rg *gin.RouterGroup) {
