@@ -122,7 +122,7 @@ func (obj *AdminProfileService) UpdatePassword(email_id string, new_password str
 	login_service := new(LoginService)
 	login_service.Init(obj.sql_database)
 
-	err := login_service.UpdatePassword(email_id, new_password)
+	err := login_service.UpdatePassword(email_id, new_password, "ADMIN")
 
 	return err
 }

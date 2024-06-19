@@ -49,11 +49,19 @@ func (obj *LoginService) Validate(login_details models.Login) string {
 	}
 }
 
-func (obj *LoginService) UpdatePassword(email_id string, new_password string) error {
+func (obj *LoginService) UpdatePassword(email_id string, new_password string, current_user_type string) error {
 
 	var existing_login models.Login
 
-	obj.sql_database.db.First(&existing_login, "email_id = ?", email_id)
+	result := obj.sql_database.db.First(&existing_login, "email_id = ?", email_id)
+
+	if result.Error != nil {
+		return errors.New("record not found")
+	}
+
+	if existing_login.User_type != current_user_type {
+		return errors.New("record not found")
+	}
 
 	//Check if new password is same as old password
 	err := bcrypt.CompareHashAndPassword([]byte(existing_login.Password), []byte(new_password))
@@ -68,7 +76,7 @@ func (obj *LoginService) UpdatePassword(email_id string, new_password string) er
 		return errors.New("unable to hash new password")
 	}
 
-	result := obj.sql_database.db.Exec(`UPDATE logins SET password = ? WHERE email_id = ?`, hashed_password, email_id)
+	result = obj.sql_database.db.Exec(`UPDATE logins SET password = ? WHERE email_id = ?`, hashed_password, email_id)
 
 	return result.Error
 }
