@@ -28,21 +28,21 @@ func (obj *AdminProfileController) CreateStudentProfile(context *gin.Context) {
 	var new_student NewStudentData
 	//Check if given JSON is valid
 	if err := context.ShouldBindJSON(&new_student); err != nil {
-		context.AbortWithError(http.StatusBadRequest, err)
+		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+	} else {
+		//separate profile and login data
+		login_data := models.Login{Email_id: new_student.Email_id, Password: new_student.Password, User_type: "STUDENT"}
+		student_profile_data := models.StudentProfile{Email_id: new_student.Email_id, First_name: new_student.First_name, Last_name: new_student.Last_name, Program_enrolled: new_student.Program_enrolled}
+
+		//Store to DB
+		err := obj.service.CreateStudentProfile(login_data, student_profile_data)
+
+		if err != nil {
+			context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": err.Error()})
+		} else {
+			context.Status(http.StatusOK)
+		}
 	}
-
-	//separate profile and login data
-	login_data := models.Login{Email_id: new_student.Email_id, Password: new_student.Password, User_type: "STUDENT"}
-	student_profile_data := models.StudentProfile{Email_id: new_student.Email_id, First_name: new_student.First_name, Last_name: new_student.Last_name, Program_enrolled: new_student.Program_enrolled}
-
-	//Store to DB
-	err := obj.service.CreateStudentProfile(login_data, student_profile_data)
-
-	if err != nil {
-		context.AbortWithError(http.StatusInternalServerError, err)
-	}
-
-	context.AbortWithStatus(http.StatusOK)
 }
 
 func (obj *AdminProfileController) GetStudentProfile(context *gin.Context) {
@@ -51,10 +51,10 @@ func (obj *AdminProfileController) GetStudentProfile(context *gin.Context) {
 	student_profile, err := obj.service.GetStudentProfile(email_id)
 
 	if err != nil {
-		context.AbortWithStatus(http.StatusNotFound)
+		context.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": err.Error()})
+	} else {
+		context.JSON(http.StatusOK, student_profile)
 	}
-
-	context.JSON(http.StatusOK, student_profile)
 }
 
 func (obj *AdminProfileController) GetAllStudentProfiles(context *gin.Context) {
@@ -62,10 +62,10 @@ func (obj *AdminProfileController) GetAllStudentProfiles(context *gin.Context) {
 	student_profile_list, err := obj.service.GetAllStudentProfiles()
 
 	if err != nil {
-		context.AbortWithStatus(http.StatusNotFound)
+		context.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": err.Error()})
+	} else {
+		context.JSON(http.StatusOK, student_profile_list)
 	}
-
-	context.JSON(http.StatusOK, student_profile_list)
 }
 
 func (obj *AdminProfileController) UpdateStudentProfile(context *gin.Context) {
@@ -74,16 +74,16 @@ func (obj *AdminProfileController) UpdateStudentProfile(context *gin.Context) {
 	var student_profile models.StudentProfile
 	//Check if given JSON is valid
 	if err := context.ShouldBindJSON(&student_profile); err != nil {
-		context.AbortWithError(http.StatusBadRequest, err)
+		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+	} else {
+		err := obj.service.UpdateStudentProfile(email_id, student_profile)
+
+		if err != nil {
+			context.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": err.Error()})
+		} else {
+			context.AbortWithStatus(http.StatusOK)
+		}
 	}
-
-	err := obj.service.UpdateStudentProfile(email_id, student_profile)
-
-	if err != nil {
-		context.AbortWithError(http.StatusInternalServerError, err)
-	}
-
-	context.AbortWithStatus(http.StatusOK)
 }
 
 func (obj *AdminProfileController) DeleteStudentProfile(context *gin.Context) {
@@ -92,9 +92,9 @@ func (obj *AdminProfileController) DeleteStudentProfile(context *gin.Context) {
 	err := obj.service.DeleteProfile(email_id)
 
 	if err != nil {
-		context.AbortWithError(http.StatusInternalServerError, err)
+		context.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": err.Error()})
 	} else {
-		context.AbortWithStatus(http.StatusOK)
+		context.Status(http.StatusOK)
 	}
 }
 
@@ -113,21 +113,22 @@ func (obj *AdminProfileController) CreateProfessorProfile(context *gin.Context) 
 
 	//Check if given JSON is valid
 	if err := context.ShouldBindJSON(&new_professor_data); err != nil {
-		context.AbortWithError(http.StatusBadRequest, err)
-	}
-
-	//separate profile and login data
-	login_data := models.Login{Email_id: new_professor_data.Email_id, Password: new_professor_data.Password, User_type: "PROFESSOR"}
-	professor_profile_data := models.ProfessorProfile{Email_id: new_professor_data.Email_id, First_name: new_professor_data.First_name, Last_name: new_professor_data.Last_name, Department: new_professor_data.Department, Designation: new_professor_data.Designation}
-
-	//Store to DB
-	err := obj.service.CreateProfessorProfile(login_data, professor_profile_data)
-
-	if err != nil {
-		context.AbortWithError(http.StatusInternalServerError, err)
+		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
 	} else {
-		context.AbortWithStatus(http.StatusOK)
+		//separate profile and login data
+		login_data := models.Login{Email_id: new_professor_data.Email_id, Password: new_professor_data.Password, User_type: "PROFESSOR"}
+		professor_profile_data := models.ProfessorProfile{Email_id: new_professor_data.Email_id, First_name: new_professor_data.First_name, Last_name: new_professor_data.Last_name, Department: new_professor_data.Department, Designation: new_professor_data.Designation}
+
+		//Store to DB
+		err := obj.service.CreateProfessorProfile(login_data, professor_profile_data)
+
+		if err != nil {
+			context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"response": err.Error()})
+		} else {
+			context.Status(http.StatusOK)
+		}
 	}
+
 }
 
 func (obj *AdminProfileController) GetProfessorProfile(context *gin.Context) {
@@ -136,10 +137,10 @@ func (obj *AdminProfileController) GetProfessorProfile(context *gin.Context) {
 	professor_profile, err := obj.service.GetProfessorProfile(email_id)
 
 	if err != nil {
-		context.AbortWithStatus(http.StatusNotFound)
+		context.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": err.Error()})
+	} else {
+		context.JSON(http.StatusOK, professor_profile)
 	}
-
-	context.JSON(http.StatusOK, professor_profile)
 }
 
 func (obj *AdminProfileController) GetAllProfessorProfiles(context *gin.Context) {
@@ -147,10 +148,10 @@ func (obj *AdminProfileController) GetAllProfessorProfiles(context *gin.Context)
 	professor_profile_list, err := obj.service.GetAllProfessorProfiles()
 
 	if err != nil {
-		context.AbortWithStatus(http.StatusNotFound)
+		context.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": err.Error()})
+	} else {
+		context.JSON(http.StatusOK, professor_profile_list)
 	}
-
-	context.JSON(http.StatusOK, professor_profile_list)
 }
 
 func (obj *AdminProfileController) UpdateProfessorProfile(context *gin.Context) {
@@ -159,16 +160,17 @@ func (obj *AdminProfileController) UpdateProfessorProfile(context *gin.Context) 
 	var professor_profile models.ProfessorProfile
 	//Check if given JSON is valid
 	if err := context.ShouldBindJSON(&professor_profile); err != nil {
-		context.AbortWithError(http.StatusBadRequest, err)
-	}
-
-	err := obj.service.UpdateProfessorProfile(email_id, professor_profile)
-
-	if err != nil {
-		context.AbortWithError(http.StatusInternalServerError, err)
+		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
 	} else {
-		context.AbortWithStatus(http.StatusOK)
+		err := obj.service.UpdateProfessorProfile(email_id, professor_profile)
+
+		if err != nil {
+			context.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": err.Error()})
+		} else {
+			context.AbortWithStatus(http.StatusOK)
+		}
 	}
+
 }
 
 func (obj *AdminProfileController) DeleteProfessorProfile(context *gin.Context) {
@@ -177,9 +179,9 @@ func (obj *AdminProfileController) DeleteProfessorProfile(context *gin.Context) 
 	err := obj.service.DeleteProfile(email_id)
 
 	if err != nil {
-		context.AbortWithError(http.StatusInternalServerError, err)
+		context.AbortWithStatusJSON(http.StatusNotFound, gin.H{"response": err.Error()})
 	} else {
-		context.AbortWithStatus(http.StatusOK)
+		context.Status(http.StatusOK)
 	}
 }
 
@@ -187,23 +189,19 @@ func (obj *AdminProfileController) UpdatePassword(context *gin.Context) {
 
 	email_id := context.Param("email_id")
 
-	type new_password struct {
-		New_password string
+	new_password := make(map[string]string)
+
+	if err := context.ShouldBindJSON(&new_password); err != nil {
+		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+	} else {
+		err := obj.service.UpdatePassword(email_id, new_password["new_password"])
+
+		if err != nil {
+			context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		} else {
+			context.Status(http.StatusOK)
+		}
 	}
-
-	var new_password_data new_password
-
-	if err := context.ShouldBindJSON(&new_password_data); err != nil {
-		context.AbortWithError(http.StatusBadRequest, err)
-	}
-
-	err := obj.service.UpdatePassword(email_id, new_password_data.New_password)
-
-	if err != nil {
-		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-	}
-
-	context.Status(http.StatusOK)
 }
 
 func (obj *AdminProfileController) RegisterRoutes(rg *gin.RouterGroup) {

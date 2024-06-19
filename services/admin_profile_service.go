@@ -3,7 +3,6 @@ package services
 import (
 	"course-registration-system/profile-service/models"
 	"errors"
-	"log"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -34,10 +33,6 @@ func (obj *AdminProfileService) CreateStudentProfile(login_data models.Login, st
 		result = obj.sql_database.db.Create(&student_profile)
 	}
 
-	if result.Error != nil {
-		log.Fatal(result.Error)
-	}
-
 	return result.Error
 }
 
@@ -60,6 +55,10 @@ func (obj *AdminProfileService) GetAllStudentProfiles() ([]models.StudentProfile
 func (obj *AdminProfileService) UpdateStudentProfile(email_id string, student_profile models.StudentProfile) error {
 	result := obj.sql_database.db.Model(&models.StudentProfile{}).Where("email_id = ?", email_id).Updates(student_profile)
 
+	if result.RowsAffected == 0 {
+		return errors.New("record not found")
+	}
+
 	return result.Error
 }
 
@@ -79,10 +78,6 @@ func (obj *AdminProfileService) CreateProfessorProfile(login_data models.Login, 
 
 	if result.Error == nil {
 		result = obj.sql_database.db.Create(&professor_profile)
-	}
-
-	if result.Error != nil {
-		log.Fatal(result.Error)
 	}
 
 	return result.Error
@@ -108,11 +103,19 @@ func (obj *AdminProfileService) UpdateProfessorProfile(email_id string, professo
 
 	result := obj.sql_database.db.Model(&models.ProfessorProfile{}).Where("email_id = ?", email_id).Updates(professor_profile)
 
+	if result.RowsAffected == 0 {
+		return errors.New("record not found / no updates")
+	}
+
 	return result.Error
 }
 
 func (obj *AdminProfileService) DeleteProfile(email_id string) error {
 	result := obj.sql_database.db.Delete(models.Login{}, "email_id = ?", email_id)
+
+	if result.RowsAffected == 0 {
+		return errors.New("record not found")
+	}
 
 	return result.Error
 }
