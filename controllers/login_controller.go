@@ -22,7 +22,7 @@ func (obj *LoginController) Login(context *gin.Context) {
 
 	//Check if given JSON is valid
 	if err := context.ShouldBindJSON(&login); err != nil {
-		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err})
+		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
 	}
 
 	//Check if given credentials are correct. If yes, then corresponding user_type is returned else INVALID_CREDENTIALS is returned
