@@ -36,17 +36,16 @@ func (obj *StudentProfileController) UpdatePassword(context *gin.Context) {
 	new_password := make(map[string]string)
 
 	if err := context.ShouldBindJSON(&new_password); err != nil {
-		context.AbortWithStatusJSON(http.StatusBadRequest, err)
-	}
-
-	err := obj.service.UpdatePassword(email_id, new_password["new_password"])
-
-	if err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
 	} else {
-		context.Status(http.StatusOK)
-	}
+		err := obj.service.UpdatePassword(email_id, new_password["new_password"])
 
+		if err != nil {
+			context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
+		} else {
+			context.Status(http.StatusOK)
+		}
+	}
 }
 
 func (obj *StudentProfileController) RegisterRoutes(rg *gin.RouterGroup) {
