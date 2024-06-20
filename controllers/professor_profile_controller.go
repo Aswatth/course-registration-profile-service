@@ -22,7 +22,7 @@ func (obj *ProfessorProfileController) FetchProfessorProfile(context *gin.Contex
 	fetched_professor_profile, err := obj.service.FetchProfessorProfile(email_id)
 
 	if err != nil {
-		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
 	} else {
 		context.JSON(http.StatusOK, fetched_professor_profile)
 	}
