@@ -1,11 +1,11 @@
 package models
 
 type ProfessorProfile struct {
-	Email_id    string `gorm:"primaryKey"`
-	First_name  string
-	Last_name   string
-	Designation string
-	Department  string
+	Email_id    string `json:"email_id" gorm:"primaryKey"`
+	First_name  string `json:"first_name"`
+	Last_name   string `json:"last_name"`
+	Designation string `json:"designation"`
+	Department  string `json:"department"`
 }
 
 func (obj *ProfessorProfile) CreateProfile(email_id string, password string, first_name string, last_name string, designation string, department string) {
