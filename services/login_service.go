@@ -34,18 +34,22 @@ func (obj *LoginService) Init(db MySqlDatabase) {
 
 }
 
-func (obj *LoginService) Validate(login_details models.Login) string {
+func (obj *LoginService) Validate(login_details models.Login) (string, error) {
 
 	var fetched_login models.Login
 
-	obj.sql_database.db.First(&fetched_login, "email_id = ?", login_details.Email_id)
+	result := obj.sql_database.db.First(&fetched_login, "email_id = ?", login_details.Email_id)
+
+	if result.RowsAffected == 0 {
+		return "", errors.New("INVALID_CREDENTIALS")
+	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(fetched_login.Password), []byte(login_details.Password))
 
 	if err != nil {
-		return "INVALID_CREDENTIALS"
+		return "", errors.New("INVALID_CREDENTIALS")
 	} else {
-		return fetched_login.User_type
+		return fetched_login.User_type, nil
 	}
 }
 

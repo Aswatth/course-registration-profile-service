@@ -25,12 +25,12 @@ func (obj *LoginController) Login(context *gin.Context) {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
 	} else {
 		//Check if given credentials are correct. If yes, then corresponding user_type is returned else INVALID_CREDENTIALS is returned
-		user_type := obj.service.Validate(login)
+		user_type, err := obj.service.Validate(login)
 
-		if user_type == "INVALID_CREDENTIALS" {
-			context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": user_type})
+		if err != nil {
+			context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"response": err.Error()})
 		} else {
-			context.JSON(http.StatusOK, gin.H{"user_type": user_type, "email_id": login.Email_id})
+			context.JSON(http.StatusOK, gin.H{"user_type": user_type})
 		}
 	}
 
