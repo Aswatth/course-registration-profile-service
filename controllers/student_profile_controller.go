@@ -16,7 +16,7 @@ func (obj *StudentProfileController) Init(service *services.StudentProfileServic
 }
 
 func (obj *StudentProfileController) FetchStudentProfile(context *gin.Context) {
-	email_id := context.Query("email_id")
+	email_id := context.Param("email_id")
 
 	//Fetch from DB
 	fetched_student_profile, err := obj.service.FetchStudentProfile(email_id)
@@ -51,7 +51,7 @@ func (obj *StudentProfileController) UpdatePassword(context *gin.Context) {
 func (obj *StudentProfileController) RegisterRoutes(rg *gin.RouterGroup) {
 	student_profile_routes := rg.Group("/students")
 
-	student_profile_routes.GET("", obj.FetchStudentProfile)
+	student_profile_routes.GET("/:email_id", obj.FetchStudentProfile)
 
 	student_profile_routes.PUT("/password/:email_id", obj.UpdatePassword)
 }
