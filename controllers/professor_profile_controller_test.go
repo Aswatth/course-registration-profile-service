@@ -53,7 +53,7 @@ func TestProfessorUpdatePassword(t *testing.T) {
 	login_service := new(services.LoginService)
 	login_service.Init(sql_database)
 
-	result := login_service.Validate(models.Login{Email_id: mock_professor_login.Email_id, Password: "1234"})
+	result, _ := login_service.Validate(models.Login{Email_id: mock_professor_login.Email_id, Password: "1234"})
 
 	if result != "PROFESSOR" {
 		t.Error("Failed to update password")

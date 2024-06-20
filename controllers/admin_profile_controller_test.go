@@ -36,7 +36,7 @@ func TestCreateStudentProfile(t *testing.T) {
 		login_service := new(services.LoginService)
 		login_service.Init(sql_database)
 
-		result := login_service.Validate(models.Login{Email_id: "student@univ.edu", Password: "12345"})
+		result, _ := login_service.Validate(models.Login{Email_id: "student@univ.edu", Password: "12345"})
 
 		if result != "STUDENT" {
 			t.Errorf("unable to login after successfully creating student profile")
@@ -73,7 +73,7 @@ func TestCreateProfessorProfile(t *testing.T) {
 		login_service := new(services.LoginService)
 		login_service.Init(sql_database)
 
-		result := login_service.Validate(models.Login{Email_id: "professor@univ.edu", Password: "12345"})
+		result, _ := login_service.Validate(models.Login{Email_id: "professor@univ.edu", Password: "12345"})
 
 		if result != "PROFESSOR" {
 			t.Errorf("unable to login after successfully creating professor profile")
@@ -112,7 +112,7 @@ func TestDeleteStudentProfile(t *testing.T) {
 		login_service := new(services.LoginService)
 		login_service.Init(sql_database)
 
-		result := login_service.Validate(models.Login{Email_id: "student@univ.edu", Password: "12345"})
+		result, _ := login_service.Validate(models.Login{Email_id: "student@univ.edu", Password: "12345"})
 
 		if result == "STUDENT" {
 			t.Errorf("able to login after successful deletion")
@@ -149,7 +149,7 @@ func TestDeleteProfessorProfile(t *testing.T) {
 		login_service := new(services.LoginService)
 		login_service.Init(sql_database)
 
-		result := login_service.Validate(models.Login{Email_id: "professor@univ.edu", Password: "12345"})
+		result, _ := login_service.Validate(models.Login{Email_id: "professor@univ.edu", Password: "12345"})
 
 		if result == "PROFESSOR" {
 			t.Errorf("able to login after successful deletion")
