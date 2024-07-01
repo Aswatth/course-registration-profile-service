@@ -46,7 +46,7 @@ func (obj *AdminProfileController) CreateStudentProfile(context *gin.Context) {
 }
 
 func (obj *AdminProfileController) GetStudentProfile(context *gin.Context) {
-	email_id := context.Param("email_id")
+	email_id := context.Query("email_id")
 
 	student_profile, err := obj.service.GetStudentProfile(email_id)
 
@@ -58,6 +58,11 @@ func (obj *AdminProfileController) GetStudentProfile(context *gin.Context) {
 }
 
 func (obj *AdminProfileController) GetAllStudentProfiles(context *gin.Context) {
+
+	if(context.Query("email_id") != "") {
+		obj.GetStudentProfile(context)
+		return
+	}
 
 	student_profile_list, err := obj.service.GetAllStudentProfiles()
 
@@ -132,7 +137,7 @@ func (obj *AdminProfileController) CreateProfessorProfile(context *gin.Context) 
 }
 
 func (obj *AdminProfileController) GetProfessorProfile(context *gin.Context) {
-	email_id := context.Param("email_id")
+	email_id := context.Query("email_id")
 
 	professor_profile, err := obj.service.GetProfessorProfile(email_id)
 
@@ -144,6 +149,11 @@ func (obj *AdminProfileController) GetProfessorProfile(context *gin.Context) {
 }
 
 func (obj *AdminProfileController) GetAllProfessorProfiles(context *gin.Context) {
+
+	if(context.Query("email_id") != "") {
+		obj.GetProfessorProfile(context)
+		return
+	}
 
 	professor_profile_list, err := obj.service.GetAllProfessorProfiles()
 
@@ -210,14 +220,12 @@ func (obj *AdminProfileController) RegisterRoutes(rg *gin.RouterGroup) {
 	admin_profile_routes.PUT("/password/:email_id", obj.UpdatePassword)
 	//Student routes
 	admin_profile_routes.POST("/students", obj.CreateStudentProfile)
-	admin_profile_routes.GET("/students/:email_id", obj.GetStudentProfile)
 	admin_profile_routes.GET("/students", obj.GetAllStudentProfiles)
 	admin_profile_routes.PUT("/students/:email_id", obj.UpdateStudentProfile)
 	admin_profile_routes.DELETE("/students/:email_id", obj.DeleteStudentProfile)
 
 	//Professor routes
 	admin_profile_routes.POST("/professors", obj.CreateProfessorProfile)
-	admin_profile_routes.GET("/professors/:email_id", obj.GetProfessorProfile)
 	admin_profile_routes.GET("/professors", obj.GetAllProfessorProfiles)
 	admin_profile_routes.PUT("/professors/:email_id", obj.UpdateProfessorProfile)
 	admin_profile_routes.DELETE("/professors/:email_id", obj.DeleteProfessorProfile)
