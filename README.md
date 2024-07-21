@@ -54,7 +54,7 @@ In case of any error encoutered, <i>{response: "error message"} </i> would be re
     <td>Update existing student profile data. <br>Fields to update: <br><i>First_name<br>Last_name<br>Program_enrolled</i></td>
   </tr>
   <tr>
-    <td>DELTE</td>
+    <td>DELETE</td>
     <td>/students/:email_id</td>
     <td>Delete existing student profile data based on email_id</td>
   </tr>
@@ -92,7 +92,7 @@ In case of any error encoutered, <i>{response: "error message"} </i> would be re
     <td>Update existing professor profile data. <br>Fields to update: <br><i>First_name<br>Last_name<br>Department<br>Designation</i></td>
   </tr>
   <tr>
-    <td>DELTE</td>
+    <td>DELETE</td>
     <td>/professors/:email_id</td>
     <td>Delete existing professor profile data based on email_id</td>
   </tr>
