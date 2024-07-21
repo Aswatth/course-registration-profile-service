@@ -109,12 +109,12 @@ In case of any error encoutered, <i>{response: "error message"} </i> would be re
   
   <tr>
     <td>GET</td>
-    <td>/:email_id</td>
+    <td>/students/:email_id</td>
     <td>Get student profile <br> Field<br><i>email_id</i></td>
   </tr>
   <tr>
     <td>PUT</td>
-    <td>/password/:email_id</td>
+    <td>/students/password/:email_id</td>
     <td>Update password for a student profile<br> Field<br><i>new_password</i></td>
   </tr>
 </table>
@@ -130,12 +130,12 @@ In case of any error encoutered, <i>{response: "error message"} </i> would be re
   
   <tr>
     <td>GET</td>
-    <td>/:email_id</td>
+    <td>/professors/:email_id</td>
     <td>Get professor profile <br> Field<br><i>email_id</i></td>
   </tr>
   <tr>
     <td>PUT</td>
-    <td>/password/:email_id</td>
+    <td>/professors/password/:email_id</td>
     <td>Update password for a professor profile<br> Field<br><i>new_password</i></td>
   </tr>
 </table>
