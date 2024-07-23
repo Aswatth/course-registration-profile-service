@@ -56,7 +56,7 @@ func (obj *AdminProfileService) UpdateStudentProfile(email_id string, student_pr
 	result := obj.sql_database.db.Model(&models.StudentProfile{}).Where("email_id = ?", email_id).Updates(student_profile)
 
 	if result.RowsAffected == 0 {
-		return errors.New("record not found")
+		return errors.New("record not found / no updates")
 	}
 
 	return result.Error
